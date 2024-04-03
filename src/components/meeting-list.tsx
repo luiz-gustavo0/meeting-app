@@ -10,6 +10,7 @@ import { useToast } from './ui/use-toast';
 import { HomeCard } from './home-card';
 import { MeetingModal } from './meeting-modal';
 import { Textarea } from './ui/textarea';
+import { Input } from './ui/input';
 
 type MeetingState =
   | 'isScheduleMeeting'
@@ -164,6 +165,21 @@ export const MeetingTypeList = () => {
         buttonText='Start Metting'
         handleClick={createMeeting}
       />
+
+      <MeetingModal
+        isOpen={meetingState === 'isJoiningMeeting'}
+        onClose={() => setMeetingState(undefined)}
+        title='Type the link here'
+        className='text-center'
+        buttonText='Join Metting'
+        handleClick={() => router.push(values.link)}
+      >
+        <Input
+          placeholder='Meeting link'
+          className='border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0'
+          onChange={(e) => setValues({ ...values, link: e.target.value })}
+        />
+      </MeetingModal>
     </section>
   );
 };
