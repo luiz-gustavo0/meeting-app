@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Call, CallRecording } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 
 import { useGetCall } from '@/hooks/useGetCall';
 import { MeetingCard } from './meeting-card';
 import { Loader } from './loader';
+import { toast } from './ui/use-toast';
 
 type CallListProps = {
   type: 'ended' | 'upcoming' | 'recordings';
@@ -42,6 +43,27 @@ export const CallList = ({ type }: CallListProps) => {
         return '';
     }
   };
+
+  useEffect(() => {
+    const fetchRecordings = async () => {
+      try {
+        const callData = await Promise.all(
+          callRecordings.map((meeting) => meeting.queryRecordings()) ?? []
+        );
+        const recordingsData = callData
+          .filter((call) => call.recordings.length > 0)
+          .flatMap((call) => call.recordings);
+
+        setRecordings(recordingsData);
+      } catch (error) {
+        toast({ title: 'Try again later' });
+      }
+    };
+
+    if (type === 'recordings') {
+      fetchRecordings();
+    }
+  }, [callRecordings, type]);
 
   const calls = getCalls();
   const noCallsMessage = getNoCallsMessages();
